@@ -1,6 +1,6 @@
-name: Ghostlife
+name: GhostLife
 version: ${project.version}
-main: ghostlife.ghostlife.Ghostlife
+main: ghostlife.ghostlife.ghostlife
 api-version: '1.15'
 authors: [ghost_46]
 description: LIFE pligin

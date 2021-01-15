@@ -3,7 +3,7 @@ package ghostlife.ghostlife;
 import java.util.HashMap;
 
 public class CoolDown {
-    private static Long coolTime = GhostLife.getInstance().getConfig().getLong("cooltime") * 1000;
+    private static Long coolTime = ghostlife.getInstance().getConfig().getLong("cooltime") * 1000;
     //  プレイヤーごとに分けるため、Mapで保存
     private static HashMap<String, Long> cooldownMap = new HashMap<String, Long>();
 
