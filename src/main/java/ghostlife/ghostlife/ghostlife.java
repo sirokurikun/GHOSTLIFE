@@ -18,6 +18,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -160,15 +163,10 @@ public final class ghostlife extends JavaPlugin implements Listener {
         if (cmd.getName().equalsIgnoreCase("sellmmgui")) {
             Inventory mirror = Bukkit.createInventory(null,9,"§cSELLMMITEM MENU");
             ItemStack menu1 = new ItemStack(Material.GREEN_STAINED_GLASS);
-            ItemStack menu2 = new ItemStack(Material.RED_STAINED_GLASS);
             ItemMeta itemMeta1 = menu1.getItemMeta();
-            ItemMeta itemMeta2 = menu2.getItemMeta();
             itemMeta1.setDisplayName(ChatColor.translateAlternateColorCodes('&',"&aSHOPを開く"));
-            itemMeta2.setDisplayName(ChatColor.translateAlternateColorCodes('&',"&cMENUを閉じる"));
             menu1.setItemMeta(itemMeta1);
-            menu2.setItemMeta(itemMeta2);
             mirror.setItem(0,menu1);
-            mirror.setItem(8,menu2);
             p.openInventory(mirror);
         }
         return true;
@@ -183,14 +181,11 @@ public final class ghostlife extends JavaPlugin implements Listener {
         for (int i = 0; i < 9; i++) {
             ItemStack content = contents[i];
             if (content == null) {
-                player.closeInventory();
+                return;
             }
             if(content.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&',"&aSHOPを開く"))){
                 Inventory mirror = Bukkit.createInventory(null,27,"§cSELLMMITEM SHOP");
                 player.openInventory(mirror);
-            }
-            if(content.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&',"&cMENUを閉じる"))){
-                player.closeInventory();
             }
         }
     }
@@ -198,23 +193,28 @@ public final class ghostlife extends JavaPlugin implements Listener {
     @EventHandler
     public void onClose(InventoryCloseEvent e){
         Inventory backpack = e.getInventory();
-        if(!e.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&',"&cSELLMMITEM SHOP"))) return;
-        ItemStack[] contents = backpack.getContents();
-        for (String key : getConfig().getConfigurationSection("mmitem").getKeys(false)) {
-            int moneyamount = getConfig().getInt("mmitem." + key + ".sellprice");
-            for (int i = 0; i < 27; i++) {
-                ItemStack content = contents[i];
-                if(content == null){
-                    continue;
-                }
-                int amount = content.getAmount();
-                int money = amount * moneyamount;
-                String ItemDisplayName = getConfig().getString("mmitem." + key + ".itemdisplay");
-                if (content.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "" + ItemDisplayName))) {
-                    e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', ItemDisplayName + "&fを売却し" + money + "&f円獲得しました"));
-                    getServer().dispatchCommand(getServer().getConsoleSender(), "eco give " + e.getPlayer().getName() + " " + money);
+        if(e.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&',"&cSELLMMITEM SHOP"))){
+            ItemStack[] contents = backpack.getContents();
+            List<String> itemDisplayNameList = new ArrayList<>();
+            double totalMoney = 0;
+            for (String key : getConfig().getConfigurationSection("mmitem").getKeys(false)) {
+                int moneyamount = getConfig().getInt("mmitem." + key + ".sellprice");
+                for (int i = 0; i < 27; i++) {
+                    ItemStack content = contents[i];
+                    if(content == null){
+                        continue;
+                    }
+                    int amount = content.getAmount();
+                    int money = amount * moneyamount;
+                    String ItemDisplayName = getConfig().getString("mmitem." + key + ".itemdisplay");
+                    if (content.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "" + ItemDisplayName))) {
+                        totalMoney += money;
+                        itemDisplayNameList.add(ItemDisplayName);
+                    }
                 }
             }
+            e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', itemDisplayNameList + "&fを売却し" + totalMoney + "&f円獲得しました"));
+            getServer().dispatchCommand(getServer().getConsoleSender(), "eco give " + e.getPlayer().getName() + " " + totalMoney);
         }
     }
 
