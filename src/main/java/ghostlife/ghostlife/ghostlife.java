@@ -15,7 +15,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -151,24 +150,55 @@ public final class ghostlife extends JavaPlugin implements Listener {
                 String ItemDisplayName = getConfig().getString("mmitem." + key + ".itemdisplay");
                 if (itemMeta.getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "" + ItemDisplayName))) {
                     item.setAmount(0);
-                    getServer().dispatchCommand(getServer().getConsoleSender(), "eco give " + p.getName() + " " + money);
                     p.sendMessage(ChatColor.translateAlternateColorCodes('&', ItemDisplayName + "&fを売却し" + money + "&f円獲得しました"));
+                    getServer().dispatchCommand(getServer().getConsoleSender(), "eco give " + p.getName() + " " + money);
                 }
             }
             getServer().dispatchCommand(p, "money");
         }
 
-        if (cmd.getName().equalsIgnoreCase("backpack")) {
-            Inventory mirror = Bukkit.createInventory(null,27,"&dバックパック");
+        if (cmd.getName().equalsIgnoreCase("sellmmgui")) {
+            Inventory mirror = Bukkit.createInventory(null,9,"§cSELLMMITEM MENU");
+            ItemStack menu1 = new ItemStack(Material.GREEN_STAINED_GLASS);
+            ItemStack menu2 = new ItemStack(Material.RED_STAINED_GLASS);
+            ItemMeta itemMeta1 = menu1.getItemMeta();
+            ItemMeta itemMeta2 = menu2.getItemMeta();
+            itemMeta1.setDisplayName(ChatColor.translateAlternateColorCodes('&',"&aSHOPを開く"));
+            itemMeta2.setDisplayName(ChatColor.translateAlternateColorCodes('&',"&cMENUを閉じる"));
+            menu1.setItemMeta(itemMeta1);
+            menu2.setItemMeta(itemMeta2);
+            mirror.setItem(0,menu1);
+            mirror.setItem(8,menu2);
             p.openInventory(mirror);
         }
         return true;
     }
 
     @EventHandler
+    public void onClick(InventoryClickEvent e){
+        Inventory backpack = e.getInventory();
+        Player player = (Player) e.getView().getPlayer();
+        if(!e.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&',"&cSELLMMITEM MENU"))) return;
+        ItemStack[] contents = backpack.getContents();
+        for (int i = 0; i < 9; i++) {
+            ItemStack content = contents[i];
+            if (content == null) {
+                player.closeInventory();
+            }
+            if(content.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&',"&aSHOPを開く"))){
+                Inventory mirror = Bukkit.createInventory(null,27,"§cSELLMMITEM SHOP");
+                player.openInventory(mirror);
+            }
+            if(content.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&',"&cMENUを閉じる"))){
+                player.closeInventory();
+            }
+        }
+    }
+
+    @EventHandler
     public void onClose(InventoryCloseEvent e){
         Inventory backpack = e.getInventory();
-        if(!e.getView().getTitle().equals("&dバックパック")) return;
+        if(!e.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&',"&cSELLMMITEM SHOP"))) return;
         ItemStack[] contents = backpack.getContents();
         for (String key : getConfig().getConfigurationSection("mmitem").getKeys(false)) {
             int moneyamount = getConfig().getInt("mmitem." + key + ".sellprice");
@@ -181,11 +211,10 @@ public final class ghostlife extends JavaPlugin implements Listener {
                 int money = amount * moneyamount;
                 String ItemDisplayName = getConfig().getString("mmitem." + key + ".itemdisplay");
                 if (content.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "" + ItemDisplayName))) {
-                    getServer().dispatchCommand(getServer().getConsoleSender(), "eco give " + e.getPlayer().getName() + " " + money);
                     e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', ItemDisplayName + "&fを売却し" + money + "&f円獲得しました"));
+                    getServer().dispatchCommand(getServer().getConsoleSender(), "eco give " + e.getPlayer().getName() + " " + money);
                 }
             }
-
         }
     }
 
@@ -214,7 +243,7 @@ public final class ghostlife extends JavaPlugin implements Listener {
         Material material = clickedBlock.getType();
         if (material == Material.OAK_WALL_SIGN || material == Material.OAK_SIGN) {
             Sign sign = (Sign) clickedBlock.getState();
-            String line = sign.getLine(0);//引数は[0-3]
+            String line = sign.getLine(0);
             if(line.equals(ChatColor.translateAlternateColorCodes('&', "sellmmitem"))){
                 ItemStack item = player.getInventory().getItemInMainHand();
                 int itemAmount = item.getAmount();
@@ -226,7 +255,7 @@ public final class ghostlife extends JavaPlugin implements Listener {
                 if (!item.hasItemMeta()) {
                     player.sendMessage(ChatColor.RED + "アイテム名が指定されていないアイテムです。追加できません");
                     return;
-                }
+                }/**/
                 getServer().dispatchCommand(player, "money");
                 for (String key : getConfig().getConfigurationSection("mmitem").getKeys(false)) {
                     int moneyamount = getConfig().getInt("mmitem." + key + ".sellprice");
@@ -234,8 +263,8 @@ public final class ghostlife extends JavaPlugin implements Listener {
                     String ItemDisplayName = getConfig().getString("mmitem." + key + ".itemdisplay");
                     if (itemMeta.getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "" + ItemDisplayName))) {
                         item.setAmount(0);
-                        getServer().dispatchCommand(getServer().getConsoleSender(), "eco give " + player.getName() + " " + money);
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&', ItemDisplayName + "&fを売却し" + money + "&f円獲得しました"));
+                        getServer().dispatchCommand(getServer().getConsoleSender(), "eco give " + player.getName() + " " + money);
                     }
                 }
                 getServer().dispatchCommand(player, "money");
