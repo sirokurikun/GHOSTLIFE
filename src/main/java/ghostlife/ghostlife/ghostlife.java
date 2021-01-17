@@ -163,10 +163,26 @@ public final class ghostlife extends JavaPlugin implements Listener {
         if (cmd.getName().equalsIgnoreCase("sellmmgui")) {
             Inventory mirror = Bukkit.createInventory(null,9,"§cSELLMMITEM MENU");
             ItemStack menu1 = new ItemStack(Material.GREEN_STAINED_GLASS);
+            ItemStack menu2 = new ItemStack(Material.RED_STAINED_GLASS);
+            ItemStack menu3 = new ItemStack(Material.YELLOW_STAINED_GLASS);
             ItemMeta itemMeta1 = menu1.getItemMeta();
+            ItemMeta itemMeta2 = menu2.getItemMeta();
+            ItemMeta itemMeta3 = menu3.getItemMeta();
             itemMeta1.setDisplayName(ChatColor.translateAlternateColorCodes('&',"&aSHOPを開く"));
+            itemMeta2.setDisplayName(ChatColor.translateAlternateColorCodes('&',"&cSHOPを閉じる"));
+            itemMeta3.setDisplayName(ChatColor.translateAlternateColorCodes('&',"&eSHOP注意点"));
+            List<String> lore = new ArrayList<String>();
+            lore.add(ChatColor.translateAlternateColorCodes('&',"&dSHOPのインベントリに"));
+            lore.add(ChatColor.translateAlternateColorCodes('&',"&d指定アイテム以外を入れてしまうと"));
+            lore.add(ChatColor.translateAlternateColorCodes('&',"&d一円にもならずアイテムが消えます"));
+            lore.add(ChatColor.translateAlternateColorCodes('&',"&d消えたアイテムに関しては&c補填対象外&dです"));
+            itemMeta3.setLore(lore);
             menu1.setItemMeta(itemMeta1);
+            menu2.setItemMeta(itemMeta2);
+            menu3.setItemMeta(itemMeta3);
             mirror.setItem(0,menu1);
+            mirror.setItem(8,menu2);
+            mirror.setItem(4,menu3);
             p.openInventory(mirror);
         }
         return true;
@@ -174,18 +190,17 @@ public final class ghostlife extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e){
-        Inventory backpack = e.getInventory();
         Player player = (Player) e.getView().getPlayer();
-        if(!e.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&',"&cSELLMMITEM MENU"))) return;
-        ItemStack[] contents = backpack.getContents();
-        for (int i = 0; i < 9; i++) {
-            ItemStack content = contents[i];
-            if (content == null) {
-                return;
-            }
-            if(content.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&',"&aSHOPを開く"))){
-                Inventory mirror = Bukkit.createInventory(null,27,"§cSELLMMITEM SHOP");
-                player.openInventory(mirror);
+        ItemStack slot = e.getCurrentItem();
+        if(slot == null) return;
+        if(e.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&',"&cSELLMMITEM MENU"))){
+            if(slot.getType() == Material.GREEN_STAINED_GLASS){
+               Inventory mirror = Bukkit.createInventory(null, 36, "§cSELLMMITEM SHOP");
+               player.openInventory(mirror);
+            }else if(slot.getType() == Material.RED_STAINED_GLASS){
+                player.closeInventory();
+            }else {
+                e.setCancelled(true);
             }
         }
     }
