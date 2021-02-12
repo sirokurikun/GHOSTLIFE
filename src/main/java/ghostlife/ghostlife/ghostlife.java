@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
 
@@ -49,6 +50,19 @@ public final class ghostlife extends JavaPlugin implements Listener {
             return true;
         }
 
+        if(cmd.getName().equalsIgnoreCase("playerskullgive")){
+            if (!sender.hasPermission("set.op")) {
+                sender.sendMessage("コマンドを実行出来る権限がありません。");
+                return true;
+            }
+            ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1, (short) 3);
+            SkullMeta skull = (SkullMeta) item.getItemMeta();
+            skull.setDisplayName(p.getName());
+            skull.setOwner(p.getName());
+            item.setItemMeta(skull);
+            p.getInventory().addItem(item);
+        }
+
         if (cmd.getName().equalsIgnoreCase("adddamege")) {
             if (!sender.hasPermission("set.op")) {
                 sender.sendMessage("コマンドを実行出来る権限がありません。");
@@ -84,7 +98,7 @@ public final class ghostlife extends JavaPlugin implements Listener {
             return true;
         }
 
-        if (cmd.getName().equalsIgnoreCase("addCustomModel") || cmd.getName().equalsIgnoreCase("acm")) {
+        if (cmd.getName().equalsIgnoreCase("addcustommodel") || cmd.getName().equalsIgnoreCase("acm")) {
             if (!sender.hasPermission("set.op")) {
                 sender.sendMessage("コマンドを実行出来る権限がありません。");
                 return true;
@@ -102,6 +116,23 @@ public final class ghostlife extends JavaPlugin implements Listener {
                 meta.setCustomModelData(id);
                 item.setItemMeta(meta);
                 p.sendMessage("カスタムモデルデータ値を" + id + "に設定しました");
+                return true;
+            } catch(NullPointerException | NumberFormatException e) {
+                return true;
+            }
+        }
+
+        if (cmd.getName().equalsIgnoreCase("getcustommodel") || cmd.getName().equalsIgnoreCase("gcm")) {
+            if (!sender.hasPermission("set.op")) {
+                sender.sendMessage("コマンドを実行出来る権限がありません。");
+                return true;
+            }
+            try{
+                ItemStack item = p.getInventory().getItemInMainHand();
+                ItemMeta meta = item.getItemMeta();
+                assert meta != null;
+                int custommodel = meta.getCustomModelData();
+                p.sendMessage("カスタムモデルデータ値は" + custommodel + "です");
                 return true;
             } catch(NullPointerException | NumberFormatException e) {
                 return true;
