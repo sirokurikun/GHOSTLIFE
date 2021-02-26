@@ -1,5 +1,8 @@
 package ghostlife.ghostlife;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
+import java.util.List;
 
 public final class ghostlife extends JavaPlugin implements Listener {
 
@@ -61,6 +65,25 @@ public final class ghostlife extends JavaPlugin implements Listener {
             skull.setOwner(p.getName());
             item.setItemMeta(skull);
             p.getInventory().addItem(item);
+        }
+        if(cmd.getName().equalsIgnoreCase("testmessage46")){
+            if (!sender.hasPermission("set.op")) {
+                sender.sendMessage("コマンドを実行出来る権限がありません。");
+                return true;
+            }
+            if (args.length <= 0) {
+                sender.sendMessage("コマンドを正しく入力してください");
+                return false;
+            }
+            int i = Integer.parseInt(args[0]);
+            String text1 = getConfig().getString("ClearMessage" + i + "." + "text1");
+            String text2 = getConfig().getString("ClearMessage" + i + "." + "text2");
+            if(text1 == null) return false;
+            if(text2 == null) return false;
+            BaseComponent[] hover = new ComponentBuilder(text2).create();
+            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,hover);
+            BaseComponent[] message = new ComponentBuilder(text1).event(hoverEvent).create();
+            p.spigot().sendMessage(message);
         }
 
         if (cmd.getName().equalsIgnoreCase("adddamege")) {
@@ -141,10 +164,10 @@ public final class ghostlife extends JavaPlugin implements Listener {
 
         if (cmd.getName().equalsIgnoreCase("sellmmgui") || cmd.getName().equalsIgnoreCase("smg")) {
             Inventory mirror = Bukkit.createInventory(null,9,"§cSELLMMITEM MENU");
-            ItemStack menu1 = new ItemStack(Material.GREEN_STAINED_GLASS);
-            ItemStack menu2 = new ItemStack(Material.RED_STAINED_GLASS);
-            ItemStack menu3 = new ItemStack(Material.YELLOW_STAINED_GLASS);
-            ItemStack menu4 = new ItemStack(Material.BLACK_STAINED_GLASS);
+            ItemStack menu1 = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+            ItemStack menu2 = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+            ItemStack menu3 = new ItemStack(Material.YELLOW_STAINED_GLASS_PANE);
+            ItemStack menu4 = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
             ItemMeta itemMeta1 = menu1.getItemMeta();
             ItemMeta itemMeta2 = menu2.getItemMeta();
             ItemMeta itemMeta3 = menu3.getItemMeta();
@@ -174,6 +197,8 @@ public final class ghostlife extends JavaPlugin implements Listener {
             mirror.setItem(8,menu2);
             mirror.setItem(5,menu3);
             mirror.setItem(3,menu4);
+            Location loc = p.getLocation();
+            p.playSound(loc,Sound.BLOCK_CHEST_OPEN, 2, 1);
             p.openInventory(mirror);
         }
         return true;
@@ -185,17 +210,24 @@ public final class ghostlife extends JavaPlugin implements Listener {
         ItemStack slot = e.getCurrentItem();
         if (slot == null) return;
         if (e.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&cSELLMMITEM MENU"))) {
-            if (slot.getType() == Material.GREEN_STAINED_GLASS) {
+            if (slot.getType() == Material.GREEN_STAINED_GLASS_PANE) {
                 if (slot.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "&aSHOPを開く"))) {
                     Inventory mirror = Bukkit.createInventory(null, 36, "§cSELLMMITEM SHOP");
+                    Location loc = player.getLocation();
+                    player.playSound(loc,Sound.BLOCK_CHEST_OPEN, 2, 1);
                     player.openInventory(mirror);
                 }
-            }else if (slot.getType() == Material.RED_STAINED_GLASS) {
+            }else if (slot.getType() == Material.RED_STAINED_GLASS_PANE) {
                 if (slot.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "&cSHOPを閉じる"))) {
                     player.closeInventory();
+                    Location loc = player.getLocation();
+                    player.playSound(loc,Sound.BLOCK_CHEST_CLOSE, 2, 1);
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cSELLMMSHOP&fを閉じました"));
                 }
             } else {
+                player.closeInventory();
+                Location loc = player.getLocation();
+                player.playSound(loc,Sound.BLOCK_GRASS_BREAK, 2, 1);
                 e.setCancelled(true);
             }
         }
@@ -204,6 +236,7 @@ public final class ghostlife extends JavaPlugin implements Listener {
     @EventHandler
     public void onClose(InventoryCloseEvent e){
         Inventory backpack = e.getInventory();
+        Player player = (Player) e.getPlayer();
         if (e.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&cSELLMMITEM SHOP"))) {
             ItemStack[] contents = backpack.getContents();
             List<String> itemDisplayNameList = new ArrayList<>();
@@ -224,6 +257,8 @@ public final class ghostlife extends JavaPlugin implements Listener {
                     }
                 }
             }
+            Location loc = player.getLocation();
+            player.playSound(loc,Sound.ENTITY_PLAYER_LEVELUP, 2, 1);
             e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', itemDisplayNameList + "&fを売却し" + totalMoney + "&f円獲得しました"));
             getServer().dispatchCommand(getServer().getConsoleSender(), "eco give " + e.getPlayer().getName() + " " + totalMoney);
         }
@@ -239,6 +274,8 @@ public final class ghostlife extends JavaPlugin implements Listener {
             if (e.getBlock().getType() == Material.OAK_LEAVES) {
                 if (num <= 2) {
                     if ((Objects.requireNonNull(player.getInventory().getItemInMainHand().getItemMeta())).getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "&cトマト採取剣"))) {
+                        Location loc = player.getLocation();
+                        player.playSound(loc,Sound.BLOCK_BELL_USE, 2, 1);
                         getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + player.getName() + " tomato 2");
                     }
                 }
