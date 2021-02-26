@@ -1,5 +1,7 @@
 cooltime: 60
-wikimessage: "&fさんが&a公式wikiリンク&fを載せました\n https://azisabaofficial.playing.wiki/d/Life%c0%b8%b3%e8%bb%aa"
+ClearMessage1:
+  text1: テスト
+  text2: テスト2
 mmitem:
   yukiti_ticket:
     itemdisplay: "&3一万円"
@@ -22,3 +24,12 @@ mmitem:
   kokuyouseki:
     itemdisplay: "&0&l黒曜石&f"
     sellprice: 10
+  assyukuwheat:
+    itemdisplay: "圧縮小麦チケット"
+    sellprice: 1920
+  assyukupotato:
+    itemdisplay: "圧縮ポテトチケット"
+    sellprice: 1920
+  assyukucarrot:
+    itemdisplay: "圧縮人参チケット"
+    sellprice: 1920
