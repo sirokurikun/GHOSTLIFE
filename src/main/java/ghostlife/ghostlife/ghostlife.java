@@ -76,14 +76,20 @@ public final class ghostlife extends JavaPlugin implements Listener {
                 return false;
             }
             int i = Integer.parseInt(args[0]);
-            String text1 = getConfig().getString("ClearMessage" + i + "." + "text1");
-            String text2 = getConfig().getString("ClearMessage" + i + "." + "text2");
-            if(text1 == null) return false;
-            if(text2 == null) return false;
-            BaseComponent[] hover = new ComponentBuilder(text2).create();
-            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,hover);
-            BaseComponent[] message = new ComponentBuilder(text1).event(hoverEvent).create();
-            p.spigot().sendMessage(message);
+            String displaname = p.getName();
+            if (args.length <= 1) {
+                return false;
+            }
+            if(args[1].equalsIgnoreCase(displaname)){
+                Player tar = Bukkit.getPlayer(args[1]);
+                String text1 = getConfig().getString("ClearMessage" + i + "." + "text1");
+                String text2 = getConfig().getString("ClearMessage" + i + "." + "text2");
+                if(text1 == null || text2 == null) return false;
+                BaseComponent[] hover = new ComponentBuilder(text2).create();
+                HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,hover);
+                BaseComponent[] message = new ComponentBuilder(text1).event(hoverEvent).create();
+                tar.spigot().sendMessage(message);
+            }
         }
 
         if (cmd.getName().equalsIgnoreCase("adddamege")) {
@@ -227,7 +233,7 @@ public final class ghostlife extends JavaPlugin implements Listener {
             } else {
                 player.closeInventory();
                 Location loc = player.getLocation();
-                player.playSound(loc,Sound.BLOCK_GRASS_BREAK, 2, 1);
+                player.playSound(loc,Sound.ENTITY_BLAZE_SHOOT, 2, 1);
                 e.setCancelled(true);
             }
         }
