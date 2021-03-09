@@ -76,20 +76,13 @@ public final class ghostlife extends JavaPlugin implements Listener {
                 return false;
             }
             int i = Integer.parseInt(args[0]);
-            String displaname = p.getName();
-            if (args.length <= 1) {
-                return false;
-            }
-            if(args[1].equalsIgnoreCase(displaname)){
-                Player tar = Bukkit.getPlayer(args[1]);
-                String text1 = getConfig().getString("ClearMessage" + i + "." + "text1");
-                String text2 = getConfig().getString("ClearMessage" + i + "." + "text2");
-                if(text1 == null || text2 == null) return false;
-                BaseComponent[] hover = new ComponentBuilder(text2).create();
-                HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,hover);
-                BaseComponent[] message = new ComponentBuilder(text1).event(hoverEvent).create();
-                tar.spigot().sendMessage(message);
-            }
+            String text1 = getConfig().getString("ClearMessage" + i + "." + "text1");
+            String text2 = getConfig().getString("ClearMessage" + i + "." + "text2");
+            if(text1 == null || text2 == null) return false;
+            BaseComponent[] hover = new ComponentBuilder(text2).create();
+            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,hover);
+            BaseComponent[] message = new ComponentBuilder(text1).event(hoverEvent).create();
+            getServer().spigot().broadcast(message);
         }
 
         if (cmd.getName().equalsIgnoreCase("adddamege")) {
@@ -227,7 +220,7 @@ public final class ghostlife extends JavaPlugin implements Listener {
                 if (slot.getItemMeta().getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "&cSHOPを閉じる"))) {
                     player.closeInventory();
                     Location loc = player.getLocation();
-                    player.playSound(loc,Sound.BLOCK_CHEST_CLOSE, 2, 1);
+                    player.playSound(loc, Sound.BLOCK_CHEST_CLOSE, 2, 1);
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cSELLMMSHOP&fを閉じました"));
                 }
             } else {
