@@ -3,19 +3,27 @@ version: ${project.version}
 main: ghostlife.ghostlife.ghostlife
 api-version: '1.15'
 authors: [ghost_46]
-description: LIFE pligin
+description: LIFE plugin
 
 commands:
-  addCustomModel:
+  addcustommodel:
     description: カスタムモデルデータ追加
+  acm:
+    description: カスタムモデルデータ追加
+  getcustommodel:
+    description: カスタムモデルデータ取得
+  gcm:
+    description: カスタムモデルデータ取得
   ghostlifereload:
     description: コンフィグリロード
   adddamege:
     description: ダメージセット
-  sellmmitem:
+  sellmmgui:
     description: MMアイテム売却
-  backpack:
-    description: バックパック
+  smg:
+    description: MMアイテム売却
+  playerskullgive:
+    description: playerhead配布
 
 permissions:
   addCustomModel.set.op:
@@ -23,4 +31,6 @@ permissions:
   ghostlifereload.set.op:
     default: op
   adddamage.set.op:
+    default: op
+  playerskullgive.set.op:
     default: op
