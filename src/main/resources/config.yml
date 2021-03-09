@@ -1,7 +1,4 @@
 cooltime: 60
-ClearMessage1:
-  text1: テスト
-  text2: テスト2
 mmitem:
   yukiti_ticket:
     itemdisplay: "&3一万円"
