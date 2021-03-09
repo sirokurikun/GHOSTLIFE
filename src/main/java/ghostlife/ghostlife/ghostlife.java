@@ -1,8 +1,5 @@
 package ghostlife.ghostlife;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -65,24 +62,6 @@ public final class ghostlife extends JavaPlugin implements Listener {
             skull.setOwner(p.getName());
             item.setItemMeta(skull);
             p.getInventory().addItem(item);
-        }
-        if(cmd.getName().equalsIgnoreCase("testmessage46")){
-            if (!sender.hasPermission("set.op")) {
-                sender.sendMessage("コマンドを実行出来る権限がありません。");
-                return true;
-            }
-            if (args.length <= 0) {
-                sender.sendMessage("コマンドを正しく入力してください");
-                return false;
-            }
-            int i = Integer.parseInt(args[0]);
-            String text1 = getConfig().getString("ClearMessage" + i + "." + "text1");
-            String text2 = getConfig().getString("ClearMessage" + i + "." + "text2");
-            if(text1 == null || text2 == null) return false;
-            BaseComponent[] hover = new ComponentBuilder(text2).create();
-            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,hover);
-            BaseComponent[] message = new ComponentBuilder(text1).event(hoverEvent).create();
-            getServer().spigot().broadcast(message);
         }
 
         if (cmd.getName().equalsIgnoreCase("adddamege")) {
